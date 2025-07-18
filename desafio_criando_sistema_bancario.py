@@ -25,9 +25,14 @@ class Cliente:
         self.endereco = endereco
         self.cidade_uf = cidade_uf
         self.contas = []
+        self.indice_conta = 0
     
     # Metódos: realizar transação e adicionar conta.
     def realizar_registro(self, conta, registro):
+        if len(conta.historico.registros_do_dia()) >= 5:
+            print(textwrap.indent("Você excedeu o número de transações permitidas para hoje!", "   "))
+            return
+        
         registro.registrar(conta)
 
     def adicionar_conta(self, conta):
@@ -108,6 +113,20 @@ class Historico:
             "valor": registro.valor,
             "data": datetime.now().strftime("%d/%b/%Y - %H:%M:%S")
         })
+    
+    def gerar_relatorio(self, tipo_registro=None):
+        for registro in self._registros:
+            if tipo_registro is None or registro["tipo"].lower() == tipo_registro.lower():
+                yield registro
+    
+    def registros_do_dia(self):
+        data_atual = datetime.now().date()
+        registros_do_dia = []
+        for registro in self._registros:
+            data_registro = datetime.strptime(registro["data"], "%d/%b/%Y - %H:%M:%S").date()
+            if data_atual == data_registro:
+                registros_do_dia.append(registro)
+        return registros_do_dia
         
 class Transacao(ABC):
     @property
@@ -194,6 +213,9 @@ class Deposito(Transacao):
         if sucesso_transacao:
             conta.historico.adicionar_transacao(self)
 
+def log_registros(func):
+    pass
+
 def depositar_valor(clientes):
     cpf = input("Informe o CPF do cliente [somente números]: ")
     cliente = filtrar_cliente(cpf, clientes)
@@ -260,7 +282,7 @@ def exibir_extrato(clientes):
     
     else:
         for registro in registros:
-            extrato += f"\n{registro['tipo']}\n\tR${registro['valor']:.2f}"
+            extrato += f"\n{registro["data"]}\n{registro['tipo']}\n\tR${registro['valor']:.2f}"
     
     print(extrato)
     print(f"\nSaldo:\n\tR$ {conta.saldo:.2f}")
