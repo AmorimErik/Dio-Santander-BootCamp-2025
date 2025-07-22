@@ -9,7 +9,10 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from pathlib import Path
 import locale, textwrap
+
+ROOT_PATH = Path(__file__).parent
 
 try:
     locale.setlocale(locale.LC_TIME, "pt_BR.UTF-8")
@@ -172,6 +175,9 @@ class Conta_Corrente(Conta):
             return super().sacar(valor)
             
         return False
+    
+    def __repr__(self):
+        return f"<{self.__class__.__name__}: ('{self.agencia}', '{self.numero_conta}', '{self.cliente.nome}')>"
 
     def __str__(self):
         return f"""\
@@ -186,6 +192,9 @@ class Pessoa_Fisica(Cliente):
         self.nome = nome
         self.data_nascimento = data_nascimento
         self.cpf = cpf
+        
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}: ('{self.cpf}')>"
 
 class Saque(Transacao):
     def __init__(self, valor):
@@ -216,7 +225,9 @@ class Deposito(Transacao):
 def log_registros(func):
     def envelope(*args, **kwargs):
         resultado = func(*args, **kwargs)
-        print(f"{datetime.now()}: {func.__name__.upper()}")
+        data_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with open(ROOT_PATH / "log.txt", "a", encoding="utf-8") as arquivo:
+            arquivo.write(f"[{data_hora}] Função '{func.__name__}' executada com argumentos {args} e {kwargs}. Retornou {resultado}\n")
         return resultado
     return envelope
 
