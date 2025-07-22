@@ -214,8 +214,13 @@ class Deposito(Transacao):
             conta.historico.adicionar_transacao(self)
 
 def log_registros(func):
-    pass
+    def envelope(*args, **kwargs):
+        resultado = func(*args, **kwargs)
+        print(f"{datetime.now()}: {func.__name__.upper()}")
+        return resultado
+    return envelope
 
+@log_registros
 def depositar_valor(clientes):
     cpf = input("Informe o CPF do cliente [somente números]: ")
     cliente = filtrar_cliente(cpf, clientes)
@@ -233,6 +238,7 @@ def depositar_valor(clientes):
     
     cliente.realizar_registro(conta, registro)
 
+@log_registros
 def sacar_valor(clientes):
     cpf = input("Informe o CPF do cliente [somente números]: ")
     cliente = filtrar_cliente(cpf, clientes)
@@ -260,6 +266,7 @@ def recuperar_conta_cliente(cliente):
     
     return cliente.contas[0]
 
+@log_registros
 def exibir_extrato(clientes):
     cpf = input(textwrap.indent("Informe o CPF do cliente [somente números]: ", "   "))
     cliente = filtrar_cliente(cpf, clientes)
@@ -302,6 +309,7 @@ def exibir_saldo(clientes):
     
     print(f"\nSaldo:\n\tR$ {conta.saldo:.2f}")
 
+@log_registros
 def cadastrar_nova_conta(nro_conta, clientes, contas):
     cpf = input(textwrap.indent("Informe o CPF do cliente [somente números]: ", "   "))
     cliente = filtrar_cliente(cpf, clientes)
@@ -316,11 +324,13 @@ def cadastrar_nova_conta(nro_conta, clientes, contas):
     
     print(textwrap.indent("Conta cadastrada com sucesso!", "   "))
 
+@log_registros
 def listar_contas(contas):
     for conta in contas:
         print("=" * 100)
         print(textwrap.dedent(str(conta)))
 
+@log_registros
 def cadastrar_cliente(clientes):
     cpf = input("Informe o CPF do cliente [somente números]: ")
     cliente = filtrar_cliente(cpf, clientes)
