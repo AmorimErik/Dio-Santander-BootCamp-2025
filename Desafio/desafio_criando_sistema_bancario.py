@@ -6,11 +6,13 @@
 # Desafio Extra:
 # Atualizar os métodos que tratam as opções do menu, para funcionarem com as classes modeladas.
 
+import locale
+import textwrap
 from abc import ABC, abstractmethod
 from datetime import datetime
-from zoneinfo import ZoneInfo
 from pathlib import Path
-import locale, textwrap
+from zoneinfo import ZoneInfo
+
 
 ROOT_PATH = Path(__file__).parent
 
@@ -141,7 +143,7 @@ class Transacao(ABC):
     def registrar(self, conta):
         pass
 
-class Conta_Corrente(Conta):
+class ContaCorrente(Conta):
     # Atributos: limite, limite_saques
     def __init__(self, numero_conta, cliente, valor_maximo_saque=500, limite_saque_diario=3):
         super().__init__(numero_conta, cliente)
@@ -186,7 +188,7 @@ class Conta_Corrente(Conta):
             Titular:\t{self.cliente.nome}
             """
             
-class Pessoa_Fisica(Cliente):
+class PessoaFisica(Cliente):
     def __init__(self, nome, data_nascimento, cpf, endereco, cidade_uf):
         super().__init__(endereco, cidade_uf)
         self.nome = nome
@@ -329,7 +331,7 @@ def cadastrar_nova_conta(nro_conta, clientes, contas):
         print(textwrap.indent("Cliente não cadastrado.", "   "))
         return
     
-    conta = Conta_Corrente.nova_conta(cliente=cliente, numero_conta=nro_conta, valor_maximo_saque=500, limite_saque_diario=3)
+    conta = ContaCorrente.nova_conta(cliente=cliente, numero_conta=nro_conta, valor_maximo_saque=500, limite_saque_diario=3)
     contas.append(conta)
     cliente.contas.append(conta)
     
@@ -353,7 +355,7 @@ def cadastrar_cliente(clientes):
         data_nascimento = input("Data de Nascimento no formato [dd/mm/aaaa]: ")
         logradouro = input("Endereço [rua, nº, bairro]: ").lower()
         cidade_uf = input("Cidade/Estado: ").lower()
-        cliente = Pessoa_Fisica(nome=nome, data_nascimento=data_nascimento, cpf=cpf, endereco=logradouro, cidade_uf=cidade_uf)
+        cliente = PessoaFisica(nome=nome, data_nascimento=data_nascimento, cpf=cpf, endereco=logradouro, cidade_uf=cidade_uf)
         clientes.append(cliente)
         print(textwrap.indent("Cliente cadastrado com sucesso!", "   "))
 
