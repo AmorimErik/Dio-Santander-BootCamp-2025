@@ -1,16 +1,13 @@
+from datetime import datetime
+from sqlalchemy import Float, ForeignKey, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from categorias.models import CategoriaModel
 from centro_treinamento.models import CentroTreinamentoModel
 from contrib.models import BaseModel
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column, relationship
-from sqlalchemy import ForeignKey, Integer
-from sqlalchemy import String
-from sqlalchemy import Float
-from datetime import datetime
-
 
 class AtletaModel(BaseModel):
-    __tablename__ = 'atletas'
+    __tablename__ = "atletas"
     
     pk_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     nome: Mapped[str] = mapped_column(String(50), nullable=False)
@@ -20,8 +17,8 @@ class AtletaModel(BaseModel):
     altura: Mapped[float] = mapped_column(Float(1), nullable=False)
     sexo: Mapped[str] = mapped_column(String(1), nullable=False)
     craated_at: Mapped[datetime] = mapped_column(datetime, nullable=False)
-    categoria: Mapped['CategoriaModel'] = relationship(back_populates='atelta')
-    categoria_id: Mapped[int] = mapped_column(ForeignKey('categorias.pk_id'))
-    centro_treinamento: Mapped['CentroTreinamentoModel'] = relationship(back_populates='atleta')
-    centro_treinamento_id: Mapped[int] = mapped_column(ForeignKey('centros_treinamento.pk_id'))
+    categoria: Mapped["CategoriaModel"] = relationship(back_populates="atelta", lazy="selectin")
+    categoria_id: Mapped[int] = mapped_column(ForeignKey("categorias.pk_id"))
+    centro_treinamento: Mapped["CentroTreinamentoModel"] = relationship(back_populates="atleta", lazy="selectin")
+    centro_treinamento_id: Mapped[int] = mapped_column(ForeignKey("centros_treinamento.pk_id"))
    
